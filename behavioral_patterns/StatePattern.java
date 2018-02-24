@@ -27,7 +27,7 @@ class StopState extends State {
 			context.setState(this);
 		} else {
 			System.out.println("Go!");
-			context.setState(new RunState(context));
+			context.setState(context.RUN);
 		}
 	}
 
@@ -42,6 +42,11 @@ class StopState extends State {
 	public void stop() {
 		System.out.println("you has already stopped!");
 		context.setState(this);
+	}
+
+	@Override
+	public String toString() {
+		return "now: STOP!";
 	}
 
 }
@@ -66,16 +71,23 @@ class RunState extends State {
 
 	@Override
 	public void stop() {
-		context.setState(new StopState(context));
+		context.setState(context.STOP);
 		context.setFloor(-1);
 		System.out.println("you arrive!");
+	}
+
+	@Override
+	public String toString() {
+		return "now: RUN!";
 	}
 
 }
 
 class LiftContext {
 	private int floor = -1;
-	private State state;
+	public final State STOP = new StopState(this);
+	public final State RUN = new RunState(this);
+	private State state = STOP;
 
 	public int getFloor() {
 		return floor;
@@ -93,11 +105,34 @@ class LiftContext {
 		this.floor = floor;
 	}
 
+	// operations for this elevator.
+	public void to(int num) {
+		state.addFloor(num);
+	}
+
+	public void stop() {
+		state.stop();
+	}
+
+	public void run() {
+		state.run();
+	}
+
 }
 
 public class StatePattern {
 
 	public static void main(String[] args) {
+		LiftContext lift = new LiftContext();
+		System.out.println(lift.getState());
+		lift.to(5);
+		System.out.println(lift.getState());
+		lift.run();
+		System.out.println(lift.getState());
+		lift.to(10);
+		lift.run();
+		lift.stop();
+		System.out.println(lift.getState());
 
 	}
 
